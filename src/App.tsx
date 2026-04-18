@@ -1,120 +1,61 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import { useCheckins } from './hooks/useCheckins'
+import { useMessages } from './hooks/useMessages'
+import { useSightings } from './hooks/useSightings'
+import { usePersonalNotes } from './hooks/usePersonalNotes'
+import { useAnonymousTips } from './hooks/useAnonymousTips'
+import { debugAnswerKeys } from './lib/jotform'
 
+// Temporary debug view — verifies API fetching works and shows raw field names
+// Replace this with the real UI once form IDs + API key are confirmed
 function App() {
-  const [count, setCount] = useState(0)
+  const { checkins, isLoading: l1, isError: e1 } = useCheckins()
+  const { messages, isLoading: l2, isError: e2 } = useMessages()
+  const { sightings, isLoading: l3, isError: e3 } = useSightings()
+  const { notes, isLoading: l4, isError: e4 } = usePersonalNotes()
+  const { tips, isLoading: l5, isError: e5 } = useAnonymousTips()
+
+  const sources = [
+    { label: 'Checkins', count: checkins.length, isLoading: l1, isError: e1, sample: checkins[0]?.raw },
+    { label: 'Messages', count: messages.length, isLoading: l2, isError: e2, sample: messages[0]?.raw },
+    { label: 'Sightings', count: sightings.length, isLoading: l3, isError: e3, sample: sightings[0]?.raw },
+    { label: 'Personal Notes', count: notes.length, isLoading: l4, isError: e4, sample: notes[0]?.raw },
+    { label: 'Anonymous Tips', count: tips.length, isLoading: l5, isError: e5, sample: tips[0]?.raw },
+  ]
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+    <div className="min-h-screen bg-slate-950 text-slate-100 p-8 font-mono">
+      <h1 className="text-2xl font-bold text-amber-400 mb-2">🔍 Missing Podo — Data Debug</h1>
+      <p className="text-slate-400 text-sm mb-8">
+        Verifying API connectivity. Replace form IDs + API key in{' '}
+        <code className="text-amber-300">src/lib/constants.ts</code>
+      </p>
 
-      <div className="ticks"></div>
+      <div className="grid grid-cols-1 gap-6">
+        {sources.map(({ label, count, isLoading, isError, sample }) => (
+          <div key={label} className="border border-slate-700 rounded-lg p-4">
+            <div className="flex items-center gap-3 mb-3">
+              <span className="text-slate-200 font-semibold">{label}</span>
+              {isLoading && <span className="text-xs text-slate-400">loading…</span>}
+              {isError && <span className="text-xs text-red-400">error — check API key / form ID</span>}
+              {!isLoading && !isError && (
+                <span className="text-xs text-emerald-400">{count} records</span>
+              )}
+            </div>
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
+            {sample && (
+              <details className="text-xs">
+                <summary className="cursor-pointer text-slate-400 hover:text-slate-200">
+                  Sample field map (use to update transformers.ts)
+                </summary>
+                <pre className="mt-2 text-slate-300 bg-slate-900 p-3 rounded overflow-auto max-h-48">
+                  {JSON.stringify(debugAnswerKeys(sample), null, 2)}
+                </pre>
+              </details>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
   )
 }
 

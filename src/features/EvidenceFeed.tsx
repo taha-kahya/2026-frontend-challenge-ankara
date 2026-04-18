@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Search, X } from 'lucide-react'
 import { useAllRecords } from '../hooks/useAllRecords'
 import { RecordCard } from './record-cards/RecordCard'
@@ -36,6 +36,8 @@ interface EvidenceFeedProps {
 export function EvidenceFeed({ selectedPerson, onPersonClick, alertsOnly, onClearAlertsOnly }: EvidenceFeedProps) {
   const [query, setQuery] = useState('')
   const [activeSource, setActiveSource] = useState<SourceType | 'all'>('all')
+  const [isSearchFocused, setIsSearchFocused] = useState(false)
+  const [isSearchAnimating, setIsSearchAnimating] = useState(false)
 
   const { records, isLoading, isError } = useAllRecords()
 
@@ -47,24 +49,53 @@ export function EvidenceFeed({ selectedPerson, onPersonClick, alertsOnly, onClea
     )
   })
 
+  useEffect(() => {
+    if (!query) {
+      setIsSearchAnimating(false)
+      return
+    }
+
+    setIsSearchAnimating(true)
+    const timeoutId = window.setTimeout(() => setIsSearchAnimating(false), 180)
+    return () => window.clearTimeout(timeoutId)
+  }, [query])
+
   return (
     <div className="flex flex-col h-full">
       {/* Toolbar */}
       <div className="px-4 pt-3 pb-0 border-b border-[--color-border] space-y-3">
         {/* Search */}
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[--color-muted]" />
+        <div
+          className={`relative transition-all duration-200 ${
+            isSearchFocused || query
+              ? 'scale-[1.01]'
+              : 'scale-100'
+          }`}
+        >
+          <Search
+            className={`absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 transition-all duration-200 ${
+              isSearchFocused || query
+                ? 'text-[--color-amber] -translate-x-0.5'
+                : 'text-[--color-muted]'
+            }`}
+          />
           <input
             type="text"
             placeholder="Search records, names, locations…"
             value={query}
             onChange={e => setQuery(e.target.value)}
-            className="w-full rounded-xl border border-[--color-border] bg-[--color-surface] py-2 pl-9 pr-8 text-xs text-[--color-text] placeholder:text-[--color-muted] focus:outline-none focus:border-[--color-amber]/50 transition-colors"
+            onFocus={() => setIsSearchFocused(true)}
+            onBlur={() => setIsSearchFocused(false)}
+            className={`w-full rounded-xl border bg-[--color-surface] py-2 pl-9 pr-8 text-xs text-[--color-text] placeholder:text-[--color-muted] focus:outline-none transition-all duration-200 ${
+              isSearchFocused || query
+                ? 'border-[--color-amber]/50 shadow-[0_0_0_1px_rgba(251,191,36,0.18)]'
+                : 'border-[--color-border]'
+            }`}
           />
           {query && (
             <button
               onClick={() => setQuery('')}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-[--color-muted] hover:text-[--color-text]"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-[--color-muted] hover:text-[--color-text] transition-all duration-150 hover:scale-110"
             >
               <X className="h-3.5 w-3.5" />
             </button>
@@ -143,12 +174,21 @@ export function EvidenceFeed({ selectedPerson, onPersonClick, alertsOnly, onClea
           />
         )}
 
-        {!isLoading && !isError && filtered.map(record => (
-          <RecordCard
+        {!isLoading && !isError && filtered.map((record, index) => (
+          <div
             key={`${record.type}-${record.id}`}
-            record={record}
-            onPersonClick={onPersonClick}
-          />
+            className={`transition-all duration-200 ${
+              isSearchAnimating ? 'translate-y-1 opacity-75' : 'translate-y-0 opacity-100'
+            }`}
+            style={{
+              transitionDelay: isSearchAnimating ? `${Math.min(index * 24, 120)}ms` : '0ms',
+            }}
+          >
+            <RecordCard
+              record={record}
+              onPersonClick={onPersonClick}
+            />
+          </div>
         ))}
       </div>
     </div>

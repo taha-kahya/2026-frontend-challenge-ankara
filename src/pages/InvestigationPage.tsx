@@ -1,12 +1,13 @@
 import { useState } from 'react'
-import { List, Map } from 'lucide-react'
+import { List, Map, Clock } from 'lucide-react'
 import { CaseHeader } from '../features/CaseHeader'
 import { SuspectList } from '../features/SuspectList'
 import { EvidenceFeed } from '../features/EvidenceFeed'
 import { PersonDetail } from '../features/PersonDetail'
 import { MapView } from '../features/MapView'
+import { TimelineView } from '../features/TimelineView'
 
-type CenterView = 'feed' | 'map'
+type CenterView = 'feed' | 'map' | 'timeline'
 
 export function InvestigationPage() {
   const [selectedPerson, setSelectedPerson] = useState<string | null>(null)
@@ -49,16 +50,29 @@ export function InvestigationPage() {
               label="Map"
               onClick={() => setCenterView('map')}
             />
+            <ViewToggle
+              active={centerView === 'timeline'}
+              icon={<Clock className="h-3.5 w-3.5" />}
+              label="Timeline"
+              onClick={() => setCenterView('timeline')}
+            />
           </div>
 
           <div className="flex-1 overflow-hidden">
-            {centerView === 'feed' ? (
+            {centerView === 'feed' && (
               <EvidenceFeed
                 selectedPerson={selectedPerson}
                 onPersonClick={handlePersonClick}
               />
-            ) : (
+            )}
+            {centerView === 'map' && (
               <MapView
+                selectedPerson={selectedPerson}
+                onPersonClick={handlePersonClick}
+              />
+            )}
+            {centerView === 'timeline' && (
+              <TimelineView
                 selectedPerson={selectedPerson}
                 onPersonClick={handlePersonClick}
               />

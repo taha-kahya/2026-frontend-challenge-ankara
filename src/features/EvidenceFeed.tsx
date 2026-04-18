@@ -71,10 +71,10 @@ export function EvidenceFeed({ selectedPerson, onPersonClick }: EvidenceFeedProp
               <button
                 key={tab.value}
                 onClick={() => setActiveSource(tab.value)}
-                className={`shrink-0 border-b-2 px-3 pb-2.5 text-xs font-medium transition-all duration-150 ${
+                className={`cursor-pointer shrink-0 border-b-2 px-3 pb-2.5 text-xs font-medium transition-all duration-150 ${
                   isActive
                     ? TAB_ACTIVE[tab.value]
-                    : 'border-transparent text-[--color-text-dim] hover:text-[--color-text]'
+                    : 'border-transparent text-[--color-text-dim] hover:text-[--color-text] hover:border-white/20'
                 }`}
               >
                 {tab.label}

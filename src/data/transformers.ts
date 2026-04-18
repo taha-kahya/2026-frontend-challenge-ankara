@@ -1,8 +1,4 @@
-// ─── Raw JotForm → Domain Types ───────────────────────────────────────────────
-// Field mappings are placeholders — update after inspecting real API responses.
-// Use debugAnswerKeys() in lib/jotform.ts to inspect a submission's fields.
-
-import { getAnswer, getAnswerByName } from '../lib/jotform'
+import { getAnswer } from '../lib/jotform'
 import type {
   JotFormSubmission,
   Checkin,
@@ -10,85 +6,114 @@ import type {
   Sighting,
   PersonalNote,
   AnonymousTip,
+  Coordinates,
 } from '../types'
 
-// ── Checkin ──────────────────────────────────────────────────────────────────
-// TODO: Update field keys after inspecting real form structure
+function parseCoordinates(raw: string): Coordinates | undefined {
+  const parts = raw.split(',').map(s => parseFloat(s.trim()))
+  if (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1])) {
+    return { lat: parts[0], lng: parts[1] }
+  }
+  return undefined
+}
+
+function parseUrgency(raw: string): Message['urgency'] {
+  if (raw === 'high') return 'high'
+  if (raw === 'medium') return 'medium'
+  return 'low'
+}
+
+function parseConfidence(raw: string): AnonymousTip['confidence'] {
+  if (raw === 'high') return 'high'
+  if (raw === 'medium') return 'medium'
+  return 'low'
+}
+
+// ── Checkin ───────────────────────────────────────────────────────────────────
+// Fields: 2=personName, 3=timestamp, 4=location, 5=coordinates, 6=note
 export function transformCheckin(submission: JotFormSubmission): Checkin {
-  const answers = submission.answers
+  const a = submission.answers
   return {
     id: submission.id,
     submittedAt: submission.created_at,
-    person: getAnswerByName(answers, 'person') || getAnswer(answers, '1'),
-    location: getAnswerByName(answers, 'location') || getAnswer(answers, '2'),
-    notes: getAnswerByName(answers, 'notes') || getAnswer(answers, '3') || undefined,
+    personName: getAnswer(a, '2'),
+    timestamp: getAnswer(a, '3'),
+    location: getAnswer(a, '4'),
+    coordinates: parseCoordinates(getAnswer(a, '5')),
+    note: getAnswer(a, '6') || undefined,
     raw: submission,
   }
 }
 
 // ── Message ───────────────────────────────────────────────────────────────────
+// Fields: 2=senderName, 3=recipientName, 4=timestamp, 5=location, 6=coordinates, 7=text, 8=urgency
 export function transformMessage(submission: JotFormSubmission): Message {
-  const answers = submission.answers
+  const a = submission.answers
   return {
     id: submission.id,
     submittedAt: submission.created_at,
-    from: getAnswerByName(answers, 'from') || getAnswer(answers, '1'),
-    to: getAnswerByName(answers, 'to') || getAnswer(answers, '2'),
-    content: getAnswerByName(answers, 'message') || getAnswerByName(answers, 'content') || getAnswer(answers, '3'),
-    timestamp: getAnswerByName(answers, 'timestamp') || getAnswerByName(answers, 'date') || undefined,
+    senderName: getAnswer(a, '2'),
+    recipientName: getAnswer(a, '3'),
+    timestamp: getAnswer(a, '4'),
+    location: getAnswer(a, '5'),
+    coordinates: parseCoordinates(getAnswer(a, '6')),
+    text: getAnswer(a, '7'),
+    urgency: parseUrgency(getAnswer(a, '8')),
     raw: submission,
   }
 }
 
 // ── Sighting ──────────────────────────────────────────────────────────────────
+// Fields: 2=personName, 3=seenWith, 4=timestamp, 5=location, 6=coordinates, 7=note
 export function transformSighting(submission: JotFormSubmission): Sighting {
-  const answers = submission.answers
+  const a = submission.answers
   return {
     id: submission.id,
     submittedAt: submission.created_at,
-    reporter: getAnswerByName(answers, 'reporter') || getAnswerByName(answers, 'name') || getAnswer(answers, '1'),
-    seenWith: getAnswerByName(answers, 'seen_with') || getAnswerByName(answers, 'person') || getAnswer(answers, '2'),
-    location: getAnswerByName(answers, 'location') || getAnswer(answers, '3'),
-    description: getAnswerByName(answers, 'description') || getAnswerByName(answers, 'details') || undefined,
-    timestamp: getAnswerByName(answers, 'timestamp') || getAnswerByName(answers, 'date') || undefined,
+    personName: getAnswer(a, '2'),
+    seenWith: getAnswer(a, '3'),
+    timestamp: getAnswer(a, '4'),
+    location: getAnswer(a, '5'),
+    coordinates: parseCoordinates(getAnswer(a, '6')),
+    note: getAnswer(a, '7') || undefined,
     raw: submission,
   }
 }
 
 // ── PersonalNote ──────────────────────────────────────────────────────────────
+// Fields: 2=authorName, 3=timestamp, 4=location, 5=coordinates, 6=note, 7=mentionedPeople
 export function transformPersonalNote(submission: JotFormSubmission): PersonalNote {
-  const answers = submission.answers
+  const a = submission.answers
+  const mentionedRaw = getAnswer(a, '7')
   return {
     id: submission.id,
     submittedAt: submission.created_at,
-    author: getAnswerByName(answers, 'author') || getAnswerByName(answers, 'name') || getAnswer(answers, '1'),
-    subject: getAnswerByName(answers, 'subject') || getAnswerByName(answers, 'about') || getAnswer(answers, '2'),
-    content: getAnswerByName(answers, 'note') || getAnswerByName(answers, 'content') || getAnswer(answers, '3'),
+    authorName: getAnswer(a, '2'),
+    timestamp: getAnswer(a, '3'),
+    location: getAnswer(a, '4'),
+    coordinates: parseCoordinates(getAnswer(a, '5')),
+    note: getAnswer(a, '6'),
+    mentionedPeople: mentionedRaw
+      ? mentionedRaw.split(',').map(s => s.trim()).filter(Boolean)
+      : [],
     raw: submission,
   }
 }
 
 // ── AnonymousTip ──────────────────────────────────────────────────────────────
+// Fields: 1=submissionDate, 2=timestamp, 3=location, 4=coordinates, 5=suspectName, 6=tip, 7=confidence
 export function transformAnonymousTip(submission: JotFormSubmission): AnonymousTip {
-  const answers = submission.answers
-  const reliabilityRaw =
-    getAnswerByName(answers, 'reliability') ||
-    getAnswerByName(answers, 'confidence') ||
-    getAnswer(answers, '2')
-
+  const a = submission.answers
   return {
     id: submission.id,
     submittedAt: submission.created_at,
-    content: getAnswerByName(answers, 'tip') || getAnswerByName(answers, 'content') || getAnswer(answers, '1'),
-    reliability: normalizeReliability(reliabilityRaw),
-    location: getAnswerByName(answers, 'location') || undefined,
+    submissionDate: getAnswer(a, '1'),
+    timestamp: getAnswer(a, '2'),
+    location: getAnswer(a, '3'),
+    coordinates: parseCoordinates(getAnswer(a, '4')),
+    suspectName: getAnswer(a, '5'),
+    tip: getAnswer(a, '6'),
+    confidence: parseConfidence(getAnswer(a, '7')),
     raw: submission,
   }
-}
-
-function normalizeReliability(raw: string): AnonymousTip['reliability'] {
-  const lower = raw.toLowerCase()
-  if (lower.includes('high') || lower === '3' || lower === 'güvenilir') return 'high'
-  if (lower.includes('med') || lower === '2' || lower === 'orta') return 'medium'
-  return 'low'
 }

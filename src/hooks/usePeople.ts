@@ -6,39 +6,53 @@ import { usePersonalNotes } from './usePersonalNotes'
 import { useAnonymousTips } from './useAnonymousTips'
 import type { PersonRecord } from '../types'
 
+const PODO = 'podo'
+
 function normalize(name: string): string {
   return name.trim().toLowerCase()
 }
 
-// Collect all unique person names across all sources
-function collectNames(
-  checkinNames: string[],
-  messageNames: string[],
-  sightingNames: string[],
-  noteNames: string[],
+function collectSuspects(
+  sightingNames: string[],    // seenWith values
+  messageNames: string[],     // senders + recipients
+  noteAuthors: string[],      // note authors
+  tipSuspects: string[],      // suspectName values
+  mentionedPeople: string[][], // mentionedPeople arrays from notes
 ): Set<string> {
-  const all = [...checkinNames, ...messageNames, ...sightingNames, ...noteNames]
+  const allNames = [
+    ...sightingNames,
+    ...messageNames,
+    ...noteAuthors,
+    ...tipSuspects,
+    ...mentionedPeople.flat(),
+  ]
+
   const seen = new Set<string>()
   const result = new Set<string>()
-  for (const name of all) {
-    if (!name) continue
+
+  for (const name of allNames) {
+    if (!name || normalize(name) === PODO) continue // exclude Podo from suspect list
     const key = normalize(name)
     if (!seen.has(key)) {
       seen.add(key)
-      result.add(name.trim()) // keep original casing of first encounter
+      result.add(name.trim())
     }
   }
+
   return result
 }
 
 function computeSuspicionScore(record: Omit<PersonRecord, 'suspicionScore'>): number {
   let score = 0
-  score += record.sightings.length * 3   // seen with Podo = most suspicious
+  score += record.sightings.length * 3
+  score += record.tips.filter(t => t.confidence === 'high').length * 4
+  score += record.tips.filter(t => t.confidence === 'medium').length * 2
+  score += record.tips.filter(t => t.confidence === 'low').length * 1
+  score += record.messagesSent.filter(m => m.urgency === 'high').length * 3
+  score += record.messagesSent.filter(m => m.urgency === 'medium').length * 2
+  score += record.messagesReceived.filter(m => m.urgency === 'high').length * 3
   score += record.checkins.length * 1
-  score += record.tips.filter(t => t.reliability === 'high').length * 4
-  score += record.tips.filter(t => t.reliability === 'medium').length * 2
-  score += record.tips.filter(t => t.reliability === 'low').length * 1
-  score += record.messages.length * 1
+  score += record.notes.length * 1
   return score
 }
 
@@ -55,47 +69,50 @@ export function usePeople() {
   const people = useMemo<PersonRecord[]>(() => {
     if (isLoading || isError) return []
 
-    const names = collectNames(
-      checkins.map(c => c.person),
-      [...messages.map(m => m.from), ...messages.map(m => m.to)],
-      [...sightings.map(s => s.reporter), ...sightings.map(s => s.seenWith)],
-      [...notes.map(n => n.author), ...notes.map(n => n.subject)],
+    const names = collectSuspects(
+      sightings.map(s => s.seenWith),
+      [...messages.map(m => m.senderName), ...messages.map(m => m.recipientName)],
+      notes.map(n => n.authorName),
+      tips.map(t => t.suspectName),
+      notes.map(n => n.mentionedPeople),
     )
 
     return Array.from(names).map(name => {
       const key = normalize(name)
 
-      const personCheckins = checkins.filter(c => normalize(c.person) === key)
-      const personMessages = messages.filter(
-        m => normalize(m.from) === key || normalize(m.to) === key,
-      )
-      const personSightings = sightings.filter(
-        s => normalize(s.reporter) === key || normalize(s.seenWith) === key,
-      )
+      const personCheckins = checkins.filter(c => normalize(c.personName) === key)
+      const messagesSent = messages.filter(m => normalize(m.senderName) === key)
+      const messagesReceived = messages.filter(m => normalize(m.recipientName) === key)
+      const personSightings = sightings.filter(s => normalize(s.seenWith) === key)
       const personNotes = notes.filter(
-        n => normalize(n.author) === key || normalize(n.subject) === key,
+        n =>
+          normalize(n.authorName) === key ||
+          n.mentionedPeople.some(p => normalize(p) === key),
       )
-      // Tips: fuzzy match name in content
-      const personTips = tips.filter(t => t.content.toLowerCase().includes(key))
+      const personTips = tips.filter(t => normalize(t.suspectName) === key)
 
-      // Last seen: latest timestamp across checkins and sightings
+      // Latest timestamp across all records
       const timestamps = [
-        ...personCheckins.map(c => c.submittedAt),
-        ...personSightings.map(s => s.timestamp ?? s.submittedAt),
+        ...personCheckins.map(c => c.timestamp),
+        ...personSightings.map(s => s.timestamp),
       ].filter(Boolean).sort().reverse()
 
-      const lastLocation =
-        personSightings[0]?.location ?? personCheckins[0]?.location
+      const lastSighting = personSightings[0]
+      const lastCheckin = personCheckins[0]
+      const lastLocation = lastSighting?.location ?? lastCheckin?.location
+      const lastCoordinates = lastSighting?.coordinates ?? lastCheckin?.coordinates
 
       const partial = {
         name,
         checkins: personCheckins,
-        messages: personMessages,
+        messagesSent,
+        messagesReceived,
         sightings: personSightings,
         notes: personNotes,
         tips: personTips,
         lastSeen: timestamps[0],
         lastLocation,
+        lastCoordinates,
       }
 
       return { ...partial, suspicionScore: computeSuspicionScore(partial) }

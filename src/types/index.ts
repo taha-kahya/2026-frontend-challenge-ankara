@@ -13,7 +13,7 @@ export interface JotFormSubmission {
   form_id: string
   ip: string
   created_at: string
-  status: 'ACTIVE' | 'DELETED' | 'ARCHIVED'
+  status: string
   answers: Record<string, JotFormAnswer>
 }
 
@@ -30,51 +30,69 @@ export interface JotFormResponse<T> {
 
 // ─── Domain Types ─────────────────────────────────────────────────────────────
 
+export interface Coordinates {
+  lat: number
+  lng: number
+}
+
 export interface Checkin {
   id: string
   submittedAt: string
-  person: string
+  personName: string
+  timestamp: string
   location: string
-  notes?: string
+  coordinates?: Coordinates
+  note?: string
   raw: JotFormSubmission
 }
 
 export interface Message {
   id: string
   submittedAt: string
-  from: string
-  to: string
-  content: string
-  timestamp?: string
+  senderName: string
+  recipientName: string
+  timestamp: string
+  location: string
+  coordinates?: Coordinates
+  text: string
+  urgency: 'low' | 'medium' | 'high'
   raw: JotFormSubmission
 }
 
 export interface Sighting {
   id: string
   submittedAt: string
-  reporter: string
-  seenWith: string // person seen with Podo
+  personName: string   // who was spotted
+  seenWith: string     // who they were seen with
+  timestamp: string
   location: string
-  description?: string
-  timestamp?: string
+  coordinates?: Coordinates
+  note?: string
   raw: JotFormSubmission
 }
 
 export interface PersonalNote {
   id: string
   submittedAt: string
-  author: string
-  subject: string
-  content: string
+  authorName: string
+  timestamp: string
+  location: string
+  coordinates?: Coordinates
+  note: string
+  mentionedPeople: string[]
   raw: JotFormSubmission
 }
 
 export interface AnonymousTip {
   id: string
   submittedAt: string
-  content: string
-  reliability: 'low' | 'medium' | 'high' | string
-  location?: string
+  submissionDate: string
+  timestamp: string
+  location: string
+  coordinates?: Coordinates
+  suspectName: string
+  tip: string
+  confidence: 'low' | 'medium' | 'high'
   raw: JotFormSubmission
 }
 
@@ -83,13 +101,15 @@ export interface AnonymousTip {
 export interface PersonRecord {
   name: string
   checkins: Checkin[]
-  messages: Message[]         // messages from or to this person
-  sightings: Sighting[]       // sightings where this person appears
-  notes: PersonalNote[]       // notes mentioning this person
-  tips: AnonymousTip[]        // tips mentioning this person (fuzzy)
-  suspicionScore: number      // derived metric
+  messagesSent: Message[]
+  messagesReceived: Message[]
+  sightings: Sighting[]          // sightings where this person appears as seenWith
+  notes: PersonalNote[]          // notes mentioning this person
+  tips: AnonymousTip[]           // tips where suspectName matches
+  suspicionScore: number
   lastSeen?: string
   lastLocation?: string
+  lastCoordinates?: Coordinates
 }
 
 // ─── UI State ─────────────────────────────────────────────────────────────────

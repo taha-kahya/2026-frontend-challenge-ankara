@@ -132,7 +132,7 @@ function ViewBar({ centerView, onChange, compact = false }: {
   compact?: boolean
 }) {
   return (
-    <div className={`flex items-center gap-1 ${compact ? '' : 'px-4 py-2 border-b border-[--color-border] bg-[--color-surface]'}`}>
+    <div className={`flex items-center gap-1 ${compact ? '' : 'px-4 h-11 border-b border-[--color-border] bg-[--color-surface] shrink-0'}`}>
       <ViewToggle active={centerView === 'feed'}     icon={<List  className="h-3.5 w-3.5" />} label={compact ? '' : 'Evidence'} onClick={() => onChange('feed')} />
       <ViewToggle active={centerView === 'map'}      icon={<Map   className="h-3.5 w-3.5" />} label={compact ? '' : 'Map'}      onClick={() => onChange('map')} />
       <ViewToggle active={centerView === 'timeline'} icon={<Clock className="h-3.5 w-3.5" />} label={compact ? '' : 'Timeline'} onClick={() => onChange('timeline')} />

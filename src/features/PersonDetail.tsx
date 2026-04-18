@@ -28,27 +28,28 @@ export function PersonDetail({ personName, onClose, onPersonClick }: PersonDetai
 
   return (
     <aside className="slide-in-right flex flex-col h-full border-l border-[--color-border] bg-[--color-surface]">
-      {/* Header */}
-      <div className="px-5 py-4 border-b border-[--color-border]">
-        <div className="flex items-start justify-between gap-2">
-          <div>
-            <p className="font-mono text-[10px] uppercase tracking-widest text-[--color-muted] mb-1">Suspect</p>
-            <h2 className="text-lg font-bold text-[--color-text]">{person.name}</h2>
-          </div>
-          <button
-            onClick={onClose}
-            className="rounded-lg p-1.5 text-[--color-muted] hover:text-[--color-text] hover:bg-[--color-surface-raised] transition-colors"
-          >
-            <X className="h-4 w-4" />
-          </button>
+      {/* Header — h-11 matches suspect list + view toggle bar */}
+      <div className="flex items-center justify-between gap-2 h-11 px-5 border-b border-[--color-border] shrink-0">
+        <div className="flex items-center gap-2 min-w-0">
+          <p className="font-mono text-[10px] uppercase tracking-widest text-[--color-muted] shrink-0">Suspect</p>
+          <span className="text-[--color-muted]">·</span>
+          <h2 className="text-sm font-bold text-[--color-text] truncate">{person.name}</h2>
         </div>
+        <button
+          onClick={onClose}
+          className="cursor-pointer shrink-0 rounded-lg p-1.5 text-[--color-muted] hover:text-[--color-text] hover:bg-[--color-surface-raised] transition-colors"
+        >
+          <X className="h-4 w-4" />
+        </button>
+      </div>
 
-        <div className="mt-3">
-          <div className="flex items-center justify-between mb-1">
-            <span className="text-[10px] font-mono uppercase tracking-wider text-[--color-muted]">Suspicion</span>
-          </div>
-          <SuspicionBar score={person.suspicionScore} max={30} />
+      {/* Suspicion bar */}
+      <div className="px-5 py-3 border-b border-[--color-border]">
+        <div className="flex items-center justify-between mb-1.5">
+          <span className="text-[10px] font-mono uppercase tracking-wider text-[--color-muted]">Suspicion</span>
+          <span className="text-[10px] font-mono text-[--color-text-dim]">{person.suspicionScore}</span>
         </div>
+        <SuspicionBar score={person.suspicionScore} max={30} showScore={false} />
       </div>
 
       {/* Last seen */}

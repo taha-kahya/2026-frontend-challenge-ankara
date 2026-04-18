@@ -15,7 +15,7 @@ export function SuspectList({ selectedPerson, onSelect }: SuspectListProps) {
 
   return (
     <aside className="flex flex-col h-full border-r border-[--color-border] relative">
-      <div className="px-4 py-3 border-b border-[--color-border]">
+      <div className="flex items-center h-11 px-4 border-b border-[--color-border] shrink-0">
         <p className="font-mono text-[10px] uppercase tracking-widest text-[--color-muted]">
           Suspects · {people.length}
         </p>

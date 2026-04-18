@@ -20,6 +20,12 @@ will have inconsistent casing and spacing. Fuzzy matching (Levenshtein / phoneti
 is a bonus feature — flagged in CLAUDE.md but not implemented in the first pass.
 If names collide or split badly, this is the first thing to revisit.
 
+### API key stored in .env.local
+API key and form IDs are read via Vite's `import.meta.env` from `.env.local`.
+This file matches the `*.local` glob in `.gitignore` so it is never committed.
+`.env.example` is committed as a safe template. `constants.ts` contains no
+hardcoded secrets.
+
 ### No mock data
 Chose not to mock data. The debug view + `debugAnswerKeys()` is the diagnostic path.
 Avoids the risk of building UI against mock shapes that don't match real API.

@@ -1,14 +1,15 @@
 // ─── JotForm API Configuration ────────────────────────────────────────────────
-// Replace these placeholders with real values before running.
+// Values are read from .env.local — never commit real keys.
+// Copy .env.example → .env.local and fill in your values.
 
-export const JOTFORM_API_KEY = 'YOUR_JOTFORM_API_KEY'
+export const JOTFORM_API_KEY = import.meta.env.VITE_JOTFORM_API_KEY as string
 
 export const FORM_IDS = {
-  checkins: 'FORM_ID_CHECKINS',
-  messages: 'FORM_ID_MESSAGES',
-  sightings: 'FORM_ID_SIGHTINGS',
-  personalNotes: 'FORM_ID_PERSONAL_NOTES',
-  anonymousTips: 'FORM_ID_ANONYMOUS_TIPS',
+  checkins: import.meta.env.VITE_FORM_ID_CHECKINS as string,
+  messages: import.meta.env.VITE_FORM_ID_MESSAGES as string,
+  sightings: import.meta.env.VITE_FORM_ID_SIGHTINGS as string,
+  personalNotes: import.meta.env.VITE_FORM_ID_PERSONAL_NOTES as string,
+  anonymousTips: import.meta.env.VITE_FORM_ID_ANONYMOUS_TIPS as string,
 } as const
 
 export type FormKey = keyof typeof FORM_IDS

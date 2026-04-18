@@ -6,30 +6,43 @@ An investigation dashboard for tracing Podo's last sightings across five data so
 
 ## Getting Started
 
+### 1. Install dependencies
+
 ```bash
 npm install
+```
+
+### 2. Configure environment
+
+```bash
+cp .env.example .env.local
+```
+
+Open `.env.local` and fill in your values:
+
+```
+VITE_JOTFORM_API_KEY=your_api_key_here
+VITE_FORM_ID_CHECKINS=your_form_id
+VITE_FORM_ID_MESSAGES=your_form_id
+VITE_FORM_ID_SIGHTINGS=your_form_id
+VITE_FORM_ID_PERSONAL_NOTES=your_form_id
+VITE_FORM_ID_ANONYMOUS_TIPS=your_form_id
+```
+
+- **API key:** [jotform.com/myaccount/api](https://www.jotform.com/myaccount/api)
+- **Form IDs:** the number in the JotForm URL — `jotform.com/form/`**`250123456789`**
+
+> `.env.local` is gitignored via `*.local` — your keys will never be committed.
+
+### 3. Run
+
+```bash
 npm run dev
 ```
 
 App runs at `http://localhost:5173`.
 
-## Configuration
-
-Before fetching real data, fill in the placeholders in `src/lib/constants.ts`:
-
-```ts
-export const JOTFORM_API_KEY = 'YOUR_JOTFORM_API_KEY'
-
-export const FORM_IDS = {
-  checkins:      'FORM_ID_CHECKINS',
-  messages:      'FORM_ID_MESSAGES',
-  sightings:     'FORM_ID_SIGHTINGS',
-  personalNotes: 'FORM_ID_PERSONAL_NOTES',
-  anonymousTips: 'FORM_ID_ANONYMOUS_TIPS',
-}
-```
-
-Once set, the debug view at `/` will show field maps per source — use these to verify transformer mappings in `src/data/transformers.ts`.
+On first load, a debug view shows fetch status and raw field names per source. Use these to verify the field mappings in `src/data/transformers.ts`.
 
 ## Stack
 

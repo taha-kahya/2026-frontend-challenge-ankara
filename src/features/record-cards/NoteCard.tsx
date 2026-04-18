@@ -10,7 +10,7 @@ interface NoteCardProps {
 
 export function NoteCard({ record, onPersonClick }: NoteCardProps) {
   return (
-    <div className="group cursor-pointer rounded-2xl border border-white/12 bg-[--color-surface] p-4 transition-all duration-150 hover:border-white/25 hover:bg-[--color-surface-raised] hover:-translate-y-0.5 hover:shadow-md hover:shadow-black/30">
+    <div className="group cursor-pointer rounded-2xl border border-white/8 bg-[--color-surface] p-4 transition-all duration-150 hover:border-white/18 hover:bg-[--color-surface-raised] hover:-translate-y-0.5 hover:shadow-md hover:shadow-black/30">
       <div className="flex items-start justify-between gap-2 mb-3">
         <SourceBadge source="note" />
         <span className="font-mono text-[11px] text-[--color-text-dim]">
@@ -35,7 +35,7 @@ export function NoteCard({ record, onPersonClick }: NoteCardProps) {
       </div>
 
       {record.mentionedPeople.length > 0 && (
-        <div className="flex flex-wrap gap-1 pt-2 border-t border-[--color-border-subtle]">
+        <div className="flex flex-wrap gap-1 pt-2 border-t border-white/8">
           {record.mentionedPeople.map(p => (
             <button
               key={p}

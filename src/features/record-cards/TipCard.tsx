@@ -16,7 +16,7 @@ const CONFIDENCE_STYLE = {
 
 export function TipCard({ record, onPersonClick }: TipCardProps) {
   return (
-    <div className="group cursor-pointer rounded-2xl border border-white/12 bg-[--color-surface] p-4 transition-all duration-150 hover:border-white/25 hover:bg-[--color-surface-raised] hover:-translate-y-0.5 hover:shadow-md hover:shadow-black/30">
+    <div className="group cursor-pointer rounded-2xl border border-white/8 bg-[--color-surface] p-4 transition-all duration-150 hover:border-white/18 hover:bg-[--color-surface-raised] hover:-translate-y-0.5 hover:shadow-md hover:shadow-black/30">
       <div className="flex items-start justify-between gap-2 mb-3">
         <div className="flex items-center gap-2">
           <SourceBadge source="tip" />

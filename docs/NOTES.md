@@ -37,4 +37,4 @@ Chose not to mock data. The debug view + `debugAnswerKeys()` is the diagnostic p
 Avoids the risk of building UI against mock shapes that don't match real API.
 
 ## TODO
-- [ ] Final README polish before submission
+- [x] Final README polish before submission

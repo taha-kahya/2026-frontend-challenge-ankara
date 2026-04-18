@@ -4,6 +4,17 @@
 
 An investigation dashboard for tracing Podo's last sightings across five data sources: check-ins, messages, sightings, personal notes, and anonymous tips.
 
+## Core Features
+
+- Multi-source evidence feed (check-ins, messages, sightings, notes, tips)
+- Cross-record person linking with suspicion scoring
+- Investigation views: evidence feed, map, and timeline
+- Interactive summary strip that jumps to relevant context
+- High alerts quick filter (urgent messages + high-confidence tips)
+- Person detail panel with related evidence navigation
+- Evidence card modal preview for quick inspection
+- Loading, empty, and error states for all data-dependent sections
+
 ## Getting Started
 
 ### 1. Install dependencies
@@ -44,6 +55,22 @@ App runs at `http://localhost:5173`.
 
 On first load, a debug view shows fetch status and raw field names per source. Use these to verify the field mappings in `src/data/transformers.ts`.
 
+## Build & Preview
+
+```bash
+npm run build
+npm run preview
+```
+
+`build` validates TypeScript and creates a production bundle.  
+`preview` serves the production output locally.
+
+## Troubleshooting
+
+- If no data appears, verify `VITE_JOTFORM_API_KEY` and all form IDs in `.env.local`.
+- If records fetch but fields are empty/misaligned, inspect debug output and update mappings in `src/data/transformers.ts`.
+- If a source fails while others work, check that form ID specifically in JotForm.
+
 ## Stack
 
 - React 19 + TypeScript + Vite
@@ -56,3 +83,8 @@ On first load, a debug view shows fetch status and raw field names per source. U
 
 - [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) — data flow, folder structure, key decisions
 - [`docs/NOTES.md`](docs/NOTES.md) — trade-offs log
+
+## Notes
+
+- No automated test suite is configured in this challenge submission.
+- `.env.local` is local-only and not committed.

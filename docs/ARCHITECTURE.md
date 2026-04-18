@@ -41,6 +41,23 @@ JotForm API
                   └─ UI components
 ```
 
+## UI Interaction Flow
+
+- `SummaryStrip` provides investigation shortcuts:
+  - last seen with -> opens timeline + selects person
+  - most suspicious -> opens evidence feed + selects person
+  - busiest location -> opens map
+  - high alerts -> opens evidence feed in alerts-only mode
+- `InvestigationPage` holds shared UI state:
+  - selected person
+  - center view (`feed | map | timeline`)
+  - alerts-only evidence mode
+- `EvidenceFeed` supports:
+  - search + source filters
+  - alerts-only filtering (urgent messages + high-confidence tips)
+  - record modal preview opened by card click
+- Right-side `PersonDetail` panel animates on both open and close for smoother transitions.
+
 ## Person Matching
 
 Names are normalized (trimmed, lowercased) and matched across:
@@ -67,3 +84,4 @@ People are sorted by score descending on the people list.
 | `debugAnswerKeys()` helper | Makes it fast to remap fields when real form IDs arrive |
 | `usePeople` aggregates at hook level | Components receive fully-resolved records, no joining in JSX |
 | React Query staleTime 5 min | Submissions don't change during a 3-hour session |
+| Evidence modal preview | Enables quick record inspection without losing investigation context |

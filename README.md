@@ -1,31 +1,45 @@
-# Jotform Frontend Challenge Project
+# Missing Podo: The Ankara Case
 
-## User Information
-Please fill in your information after forking this repository:
+**Jotform Frontend Challenge 2026 — Ahmet Taha Kahya**
 
-- **Name**: Ahmet Taha Kahya
-
-## Project Description
-[Add a brief description of your project here]
+An investigation dashboard for tracing Podo's last sightings across five data sources: check-ins, messages, sightings, personal notes, and anonymous tips.
 
 ## Getting Started
-[Add instructions for setting up and running the project]
 
-# 🚀 Challenge Duyurusu
+```bash
+npm install
+npm run dev
+```
 
-## 📅 Tarih ve Saat
-Cumartesi günü başlama saatinden itibaren üç saattir.
+App runs at `http://localhost:5173`.
 
-## 🎯 Challenge Konsepti
-Bu challenge'da, size özel hazırlanmış bir senaryo üzerine web uygulaması geliştirmeniz istenecektir. Challenge başlangıcında senaryo detayları paylaşılacaktır.Katılımcılar, verilen GitHub reposunu fork ederek kendi geliştirme ortamlarını oluşturacaklardır.
+## Configuration
 
-## 📦 GitHub Reposu
-Challenge için kullanılacak repo: https://github.com/cemjotform/2026-frontend-challenge-ankara
+Before fetching real data, fill in the placeholders in `src/lib/constants.ts`:
 
-## 🛠️ Hazırlık Süreci
-1. GitHub reposunu fork edin
-2. Tercih ettiğiniz framework ile geliştirme ortamınızı hazırlayın
-3. Hazırladığınız setup'ı fork ettiğiniz repoya gönderin
+```ts
+export const JOTFORM_API_KEY = 'YOUR_JOTFORM_API_KEY'
 
-## 💡 Önemli Notlar
-- Katılımcılar kendi tercih ettikleri framework'leri kullanabilirler
+export const FORM_IDS = {
+  checkins:      'FORM_ID_CHECKINS',
+  messages:      'FORM_ID_MESSAGES',
+  sightings:     'FORM_ID_SIGHTINGS',
+  personalNotes: 'FORM_ID_PERSONAL_NOTES',
+  anonymousTips: 'FORM_ID_ANONYMOUS_TIPS',
+}
+```
+
+Once set, the debug view at `/` will show field maps per source — use these to verify transformer mappings in `src/data/transformers.ts`.
+
+## Stack
+
+- React 19 + TypeScript + Vite
+- Tailwind CSS v4
+- React Query v5
+- React Router v7
+- lucide-react
+
+## Docs
+
+- [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) — data flow, folder structure, key decisions
+- [`docs/NOTES.md`](docs/NOTES.md) — trade-offs log

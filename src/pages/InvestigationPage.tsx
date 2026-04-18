@@ -6,6 +6,7 @@ import { EvidenceFeed } from '../features/EvidenceFeed'
 import { PersonDetail } from '../features/PersonDetail'
 import { MapView } from '../features/MapView'
 import { TimelineView } from '../features/TimelineView'
+import { SummaryStrip } from '../features/SummaryStrip'
 
 type CenterView = 'feed' | 'map' | 'timeline'
 
@@ -24,6 +25,8 @@ export function InvestigationPage() {
   return (
     <div className="flex flex-col h-screen bg-[--color-base] overflow-hidden">
       <CaseHeader />
+
+      <SummaryStrip onPersonClick={handlePersonClick} />
 
       <div className="flex flex-1 overflow-hidden">
         {/* Left: Suspects */}

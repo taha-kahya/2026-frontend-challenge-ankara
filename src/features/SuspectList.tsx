@@ -24,7 +24,7 @@ export function SuspectList({ selectedPerson, onSelect }: SuspectListProps) {
       {/* Fade-out at bottom */}
       <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-10 bg-linear-to-t from-[--color-base] to-transparent z-10" />
 
-      <div className="flex-1 overflow-y-auto p-3 space-y-2">
+      <div className="flex-1 overflow-y-auto p-3 space-y-3">
         {isLoading && (
           <>
             <SuspectSkeleton />
@@ -64,10 +64,10 @@ function SuspectCard({ person, rank, isSelected, onSelect }: SuspectCardProps) {
   return (
     <button
       onClick={() => onSelect(isSelected ? null : person.name)}
-      className={`w-full text-left rounded-xl border p-3 transition-all duration-150 ${
+      className={`w-full cursor-pointer text-left rounded-xl border p-3 transition-all duration-150 ${
         isSelected
-          ? 'border-amber-500/50 bg-amber-500/8 shadow-sm shadow-amber-500/10'
-          : 'border-[--color-border] bg-[--color-surface] hover:border-[--color-border] hover:bg-[--color-surface-raised]'
+          ? 'border-amber-500/30 bg-amber-500/10 shadow-md shadow-amber-500/10'
+          : 'border-white/12 bg-[--color-surface] hover:border-white/25 hover:bg-[--color-surface-raised] hover:-translate-y-0.5 hover:shadow-md hover:shadow-black/30'
       }`}
     >
       <div className="flex items-start justify-between gap-2 mb-2">

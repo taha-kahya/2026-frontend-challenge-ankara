@@ -141,7 +141,7 @@ export function TimelineView({ selectedPerson, onPersonClick }: TimelineViewProp
                     <div className={`absolute -left-[5px] top-1.5 h-3.5 w-3.5 rounded-full border-2 border-[--color-base] ${DOT_COLOR[record.type]}`} />
 
                     {/* Content */}
-                    <div className="flex-1 group rounded-xl border border-[--color-border] bg-[--color-surface] p-3 transition-colors hover:bg-[--color-surface-raised]">
+                    <div className="flex-1 group cursor-pointer rounded-xl border border-white/12 bg-[--color-surface] p-3 transition-all duration-150 hover:border-white/25 hover:bg-[--color-surface-raised] hover:-translate-y-0.5 hover:shadow-md hover:shadow-black/30">
                       <div className="flex items-start justify-between gap-2 mb-1.5">
                         <SourceBadge source={record.type} size="sm" />
                         <span className="font-mono text-[10px] text-[--color-muted] shrink-0">

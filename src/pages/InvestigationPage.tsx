@@ -40,7 +40,7 @@ export function InvestigationPage() {
 
       {/* ── Desktop layout (lg+): 3-panel side by side ── */}
       <div className="hidden lg:flex flex-1 overflow-hidden">
-        <div className="w-64 shrink-0 overflow-hidden">
+        <div className="w-72 shrink-0 overflow-hidden">
           <SuspectList selectedPerson={selectedPerson} onSelect={setSelectedPerson} />
         </div>
 

@@ -13,12 +13,12 @@ export function MessageCard({ record, onPersonClick }: MessageCardProps) {
   const isMedium = record.urgency === 'medium'
 
   return (
-    <div className={`group rounded-2xl border bg-[--color-surface] p-4 transition-all duration-150 hover:bg-[--color-surface-raised] hover:-translate-y-0.5 hover:shadow-lg ${
+    <div className={`group cursor-pointer rounded-2xl border p-4 transition-all duration-150 hover:border-white/25 hover:-translate-y-0.5 hover:shadow-md hover:shadow-black/30 ${
       isUrgent
-        ? 'border-red-500/40 hover:border-red-500/60 shadow-sm shadow-red-500/10 hover:shadow-red-500/20'
+        ? 'border-red-500/20 bg-red-500/8 hover:bg-red-500/12'
         : isMedium
-        ? 'border-amber-500/25 hover:border-amber-500/40'
-        : 'border-[--color-border] hover:border-violet-500/30'
+        ? 'border-white/12 bg-amber-500/6 hover:bg-amber-500/10'
+        : 'border-white/12 bg-[--color-surface] hover:bg-[--color-surface-raised]'
     }`}>
       <div className="flex items-start justify-between gap-2 mb-3">
         <div className="flex items-center gap-2">

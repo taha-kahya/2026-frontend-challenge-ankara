@@ -10,7 +10,7 @@ interface SightingCardProps {
 
 export function SightingCard({ record, onPersonClick }: SightingCardProps) {
   return (
-    <div className="group rounded-2xl border border-amber-500/25 bg-[--color-surface] p-4 transition-all duration-150 hover:border-amber-500/50 hover:bg-[--color-surface-raised] hover:-translate-y-0.5 hover:shadow-lg hover:shadow-amber-500/10 shadow-sm shadow-amber-500/5">
+    <div className="group cursor-pointer rounded-2xl border border-amber-500/15 bg-amber-500/5 p-4 transition-all duration-150 hover:border-white/15 hover:bg-amber-500/10 hover:-translate-y-0.5 hover:shadow-md hover:shadow-amber-500/10">
       <div className="flex items-start justify-between gap-2 mb-3">
         <SourceBadge source="sighting" />
         <span className="font-mono text-[11px] text-[--color-text-dim]">

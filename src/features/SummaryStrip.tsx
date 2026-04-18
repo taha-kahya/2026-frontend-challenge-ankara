@@ -5,11 +5,12 @@ import { formatTime, formatDate } from '../utils/time'
 interface SummaryStripProps {
   onPersonClick: (name: string) => void
   onOpenView: (view: SummaryView) => void
+  onOpenHighAlerts: () => void
 }
 
 type SummaryView = 'feed' | 'map' | 'timeline'
 
-export function SummaryStrip({ onPersonClick, onOpenView }: SummaryStripProps) {
+export function SummaryStrip({ onPersonClick, onOpenView, onOpenHighAlerts }: SummaryStripProps) {
   const { lastSeenWith, lastSeenLocation, lastSeenTime, topSuspect, busiestLocation, alertCount } =
     useSummaryInsights()
 
@@ -87,7 +88,7 @@ export function SummaryStrip({ onPersonClick, onOpenView }: SummaryStripProps) {
         icon={<AlertTriangle className="h-3.5 w-3.5 text-orange-400" />}
         label="High alerts"
         accent="orange"
-        onClick={() => onOpenView('feed')}
+        onClick={onOpenHighAlerts}
       >
         <span className={`font-semibold ${alertCount > 0 ? 'text-orange-300' : 'text-[--color-text-dim]'}`}>
           {alertCount}

@@ -16,6 +16,7 @@ export function InvestigationPage() {
   const [selectedPerson, setSelectedPerson] = useState<string | null>(null)
   const [centerView, setCenterView] = useState<CenterView>('feed')
   const [mobilePanel, setMobilePanel] = useState<MobilePanel>('main')
+  const [alertsOnly, setAlertsOnly] = useState(false)
 
   function handlePersonClick(name: string) {
     if (!name) {
@@ -34,14 +35,25 @@ export function InvestigationPage() {
   }
 
   function handleSummaryViewOpen(view: CenterView) {
+    setAlertsOnly(false)
     setCenterView(view)
+    setMobilePanel('main')
+  }
+
+  function handleHighAlertsOpen() {
+    setAlertsOnly(true)
+    setCenterView('feed')
     setMobilePanel('main')
   }
 
   return (
     <div className="flex flex-col h-screen bg-[--color-base] overflow-hidden">
       <CaseHeader />
-      <SummaryStrip onPersonClick={handlePersonClick} onOpenView={handleSummaryViewOpen} />
+      <SummaryStrip
+        onPersonClick={handlePersonClick}
+        onOpenView={handleSummaryViewOpen}
+        onOpenHighAlerts={handleHighAlertsOpen}
+      />
 
       {/* ── Desktop layout (lg+): 3-panel side by side ── */}
       <div className="hidden lg:flex flex-1 overflow-hidden">
@@ -52,7 +64,13 @@ export function InvestigationPage() {
         <div className="flex-1 flex flex-col overflow-hidden">
           <ViewBar centerView={centerView} onChange={setCenterView} />
           <div className="flex-1 overflow-hidden">
-            <CenterPanel centerView={centerView} selectedPerson={selectedPerson} onPersonClick={handlePersonClick} />
+            <CenterPanel
+              centerView={centerView}
+              selectedPerson={selectedPerson}
+              onPersonClick={handlePersonClick}
+              alertsOnly={alertsOnly}
+              onClearAlertsOnly={() => setAlertsOnly(false)}
+            />
           </div>
         </div>
 
@@ -102,7 +120,13 @@ export function InvestigationPage() {
             <SuspectList selectedPerson={selectedPerson} onSelect={handleSuspectSelect} />
           )}
           {mobilePanel === 'main' && (
-            <CenterPanel centerView={centerView} selectedPerson={selectedPerson} onPersonClick={handlePersonClick} />
+            <CenterPanel
+              centerView={centerView}
+              selectedPerson={selectedPerson}
+              onPersonClick={handlePersonClick}
+              alertsOnly={alertsOnly}
+              onClearAlertsOnly={() => setAlertsOnly(false)}
+            />
           )}
           {mobilePanel === 'detail' && selectedPerson && (
             <PersonDetail
@@ -117,14 +141,23 @@ export function InvestigationPage() {
   )
 }
 
-function CenterPanel({ centerView, selectedPerson, onPersonClick }: {
+function CenterPanel({ centerView, selectedPerson, onPersonClick, alertsOnly, onClearAlertsOnly }: {
   centerView: CenterView
   selectedPerson: string | null
   onPersonClick: (name: string) => void
+  alertsOnly: boolean
+  onClearAlertsOnly: () => void
 }) {
   return (
     <>
-      {centerView === 'feed' && <EvidenceFeed selectedPerson={selectedPerson} onPersonClick={onPersonClick} />}
+      {centerView === 'feed' && (
+        <EvidenceFeed
+          selectedPerson={selectedPerson}
+          onPersonClick={onPersonClick}
+          alertsOnly={alertsOnly}
+          onClearAlertsOnly={onClearAlertsOnly}
+        />
+      )}
       {centerView === 'map'  && <MapView      selectedPerson={selectedPerson} onPersonClick={onPersonClick} />}
       {centerView === 'timeline' && <TimelineView selectedPerson={selectedPerson} onPersonClick={onPersonClick} />}
     </>

@@ -29,15 +29,23 @@ const TAB_ACTIVE: Record<string, string> = {
 interface EvidenceFeedProps {
   selectedPerson: string | null
   onPersonClick: (name: string) => void
+  alertsOnly: boolean
+  onClearAlertsOnly: () => void
 }
 
-export function EvidenceFeed({ selectedPerson, onPersonClick }: EvidenceFeedProps) {
+export function EvidenceFeed({ selectedPerson, onPersonClick, alertsOnly, onClearAlertsOnly }: EvidenceFeedProps) {
   const [query, setQuery] = useState('')
   const [activeSource, setActiveSource] = useState<SourceType | 'all'>('all')
 
   const { records, isLoading, isError } = useAllRecords()
 
-  const filtered = filterRecords(records, query, activeSource, selectedPerson)
+  const filtered = filterRecords(records, query, activeSource, selectedPerson).filter(record => {
+    if (!alertsOnly) return true
+    return (
+      (record.type === 'message' && record.urgency === 'high') ||
+      (record.type === 'tip' && record.confidence === 'high')
+    )
+  })
 
   return (
     <div className="flex flex-col h-full">
@@ -94,6 +102,21 @@ export function EvidenceFeed({ selectedPerson, onPersonClick }: EvidenceFeedProp
           <button
             onClick={() => onPersonClick('')}
             className="text-[10px] text-amber-400/70 hover:text-amber-300 font-mono transition-colors"
+          >
+            clear ×
+          </button>
+        </div>
+      )}
+
+      {alertsOnly && (
+        <div className="flex items-center justify-between px-4 py-2 bg-orange-500/8 border-b border-orange-500/20">
+          <span className="text-xs text-orange-300">
+            Showing <span className="font-semibold">high alerts only</span>
+            <span className="text-orange-400/60 ml-1">· {filtered.length} records</span>
+          </span>
+          <button
+            onClick={onClearAlertsOnly}
+            className="text-[10px] text-orange-400/70 hover:text-orange-300 font-mono transition-colors"
           >
             clear ×
           </button>

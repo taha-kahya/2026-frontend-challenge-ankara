@@ -33,10 +33,15 @@ export function InvestigationPage() {
     if (name) setMobilePanel('detail')
   }
 
+  function handleSummaryViewOpen(view: CenterView) {
+    setCenterView(view)
+    setMobilePanel('main')
+  }
+
   return (
     <div className="flex flex-col h-screen bg-[--color-base] overflow-hidden">
       <CaseHeader />
-      <SummaryStrip onPersonClick={handlePersonClick} />
+      <SummaryStrip onPersonClick={handlePersonClick} onOpenView={handleSummaryViewOpen} />
 
       {/* ── Desktop layout (lg+): 3-panel side by side ── */}
       <div className="hidden lg:flex flex-1 overflow-hidden">

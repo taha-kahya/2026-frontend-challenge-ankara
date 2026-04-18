@@ -4,9 +4,12 @@ import { formatTime, formatDate } from '../utils/time'
 
 interface SummaryStripProps {
   onPersonClick: (name: string) => void
+  onOpenView: (view: SummaryView) => void
 }
 
-export function SummaryStrip({ onPersonClick }: SummaryStripProps) {
+type SummaryView = 'feed' | 'map' | 'timeline'
+
+export function SummaryStrip({ onPersonClick, onOpenView }: SummaryStripProps) {
   const { lastSeenWith, lastSeenLocation, lastSeenTime, topSuspect, busiestLocation, alertCount } =
     useSummaryInsights()
 
@@ -17,14 +20,14 @@ export function SummaryStrip({ onPersonClick }: SummaryStripProps) {
         icon={<Eye className="h-3.5 w-3.5 text-amber-400" />}
         label="Last seen with"
         accent="amber"
+        onClick={() => {
+          if (!lastSeenWith) return
+          onOpenView('timeline')
+          onPersonClick(lastSeenWith)
+        }}
       >
         {lastSeenWith ? (
-          <button
-            onClick={() => onPersonClick(lastSeenWith)}
-            className="font-semibold text-amber-300 hover:text-amber-200 transition-colors"
-          >
-            {lastSeenWith}
-          </button>
+          <span className="font-semibold text-amber-300">{lastSeenWith}</span>
         ) : (
           <span className="text-[--color-text-dim]">Unknown</span>
         )}
@@ -43,15 +46,15 @@ export function SummaryStrip({ onPersonClick }: SummaryStripProps) {
         icon={<User className="h-3.5 w-3.5 text-red-400" />}
         label="Most suspicious"
         accent="red"
+        onClick={() => {
+          if (!topSuspect) return
+          onOpenView('feed')
+          onPersonClick(topSuspect.name)
+        }}
       >
         {topSuspect ? (
           <>
-            <button
-              onClick={() => onPersonClick(topSuspect.name)}
-              className="font-semibold text-red-300 hover:text-red-200 transition-colors"
-            >
-              {topSuspect.name}
-            </button>
+            <span className="font-semibold text-red-300">{topSuspect.name}</span>
             <span className="ml-1.5 font-mono text-[--color-muted]">score {topSuspect.score}</span>
           </>
         ) : (
@@ -64,6 +67,10 @@ export function SummaryStrip({ onPersonClick }: SummaryStripProps) {
         icon={<MapPin className="h-3.5 w-3.5 text-blue-400" />}
         label="Busiest location"
         accent="blue"
+        onClick={() => {
+          if (!busiestLocation) return
+          onOpenView('map')
+        }}
       >
         {busiestLocation ? (
           <>
@@ -80,6 +87,7 @@ export function SummaryStrip({ onPersonClick }: SummaryStripProps) {
         icon={<AlertTriangle className="h-3.5 w-3.5 text-orange-400" />}
         label="High alerts"
         accent="orange"
+        onClick={() => onOpenView('feed')}
       >
         <span className={`font-semibold ${alertCount > 0 ? 'text-orange-300' : 'text-[--color-text-dim]'}`}>
           {alertCount}
@@ -104,14 +112,22 @@ function SummaryCard({
   label,
   accent,
   children,
+  onClick,
 }: {
   icon: React.ReactNode
   label: string
   accent: Accent
   children: React.ReactNode
+  onClick?: () => void
 }) {
+  const Wrapper = onClick ? 'button' : 'div'
+
   return (
-    <div className={`shrink-0 sm:flex-1 flex flex-col gap-1 px-4 py-2.5 min-w-40 ${ACCENT_BG[accent]} bg-[--color-surface]`}>
+    <Wrapper
+      onClick={onClick}
+      className={`shrink-0 sm:flex-1 flex flex-col gap-1 px-4 py-2.5 min-w-40 ${ACCENT_BG[accent]} bg-[--color-surface] ${onClick ? 'cursor-pointer transition-colors hover:bg-white/5 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-amber-400/70 text-left' : ''}`}
+      type={onClick ? 'button' : undefined}
+    >
       <div className="flex items-center gap-1.5">
         {icon}
         <span className="font-mono text-[9px] uppercase tracking-widest text-[--color-muted]">{label}</span>
@@ -119,6 +135,6 @@ function SummaryCard({
       <div className="flex items-baseline gap-0 flex-wrap text-xs">
         {children}
       </div>
-    </div>
+    </Wrapper>
   )
 }

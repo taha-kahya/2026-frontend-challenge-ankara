@@ -16,7 +16,7 @@ export function CaseHeader() {
   const topSuspect = people[0]
 
   return (
-    <header className="border-b border-[--color-border] bg-[--color-surface] px-6 py-4">
+    <header className="border-b border-[--color-border] bg-[--color-surface] px-4 lg:px-6 py-3 lg:py-4">
       <div className="flex items-center justify-between gap-4">
 
         {/* Title */}
@@ -32,7 +32,7 @@ export function CaseHeader() {
               </span>
             </div>
             {lastSighting && (
-              <div className="flex items-center gap-1.5 mt-0.5 text-xs text-[--color-text-dim]">
+              <div className="hidden sm:flex items-center gap-1.5 mt-0.5 text-xs text-[--color-text-dim]">
                 <MapPin className="h-3 w-3 text-amber-400" />
                 <span>Last seen at</span>
                 <span className="text-[--color-text] font-medium">{lastSighting.location}</span>
@@ -51,12 +51,12 @@ export function CaseHeader() {
         </div>
 
         {/* Stats */}
-        <div className="flex items-center gap-6">
+        <div className="flex items-center gap-4 lg:gap-6">
           <Stat icon={<Eye className="h-3.5 w-3.5" />} value={sightings.length} label="sightings" />
           <Stat icon={<Users className="h-3.5 w-3.5" />} value={people.length} label="suspects" />
-          <Stat icon={<FileText className="h-3.5 w-3.5" />} value={total} label="records" />
+          <Stat icon={<FileText className="h-3.5 w-3.5" />} value={total} label="records" className="hidden sm:flex" />
           {topSuspect && (
-            <div className="border-l border-[--color-border] pl-6">
+            <div className="hidden md:block border-l border-[--color-border] pl-6">
               <p className="text-[10px] font-mono uppercase tracking-wider text-[--color-muted] mb-0.5">Top suspect</p>
               <p className="text-sm font-semibold text-red-300">{topSuspect.name}</p>
             </div>
@@ -68,9 +68,9 @@ export function CaseHeader() {
   )
 }
 
-function Stat({ icon, value, label }: { icon: React.ReactNode; value: number; label: string }) {
+function Stat({ icon, value, label, className = '' }: { icon: React.ReactNode; value: number; label: string; className?: string }) {
   return (
-    <div className="flex flex-col items-center gap-0.5">
+    <div className={`flex flex-col items-center gap-0.5 ${className}`}>
       <div className="flex items-center gap-1 text-[--color-text-dim]">{icon}</div>
       <span className="font-mono text-base font-bold text-[--color-text]">{value}</span>
       <span className="text-[10px] font-mono uppercase tracking-wider text-[--color-muted]">{label}</span>

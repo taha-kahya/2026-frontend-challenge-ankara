@@ -11,7 +11,7 @@ export function SummaryStrip({ onPersonClick }: SummaryStripProps) {
     useSummaryInsights()
 
   return (
-    <div className="fade-in-down flex items-stretch gap-px border-b border-[--color-border] bg-[--color-border]">
+    <div className="fade-in-down flex items-stretch gap-px border-b border-[--color-border] bg-[--color-border] overflow-x-auto">
       {/* Last seen with */}
       <SummaryCard
         icon={<Eye className="h-3.5 w-3.5 text-amber-400" />}
@@ -111,7 +111,7 @@ function SummaryCard({
   children: React.ReactNode
 }) {
   return (
-    <div className={`flex-1 flex flex-col gap-1 px-4 py-2.5 ${ACCENT_BG[accent]} bg-[--color-surface]`}>
+    <div className={`shrink-0 sm:flex-1 flex flex-col gap-1 px-4 py-2.5 min-w-40 ${ACCENT_BG[accent]} bg-[--color-surface]`}>
       <div className="flex items-center gap-1.5">
         {icon}
         <span className="font-mono text-[9px] uppercase tracking-widest text-[--color-muted]">{label}</span>

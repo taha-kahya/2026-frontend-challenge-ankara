@@ -13,9 +13,9 @@ export function MessageCard({ record, onPersonClick }: MessageCardProps) {
   const isMedium = record.urgency === 'medium'
 
   return (
-    <div className={`group rounded-2xl border bg-[--color-surface] p-4 transition-all duration-150 hover:bg-[--color-surface-raised] ${
+    <div className={`group rounded-2xl border bg-[--color-surface] p-4 transition-all duration-150 hover:bg-[--color-surface-raised] hover:-translate-y-0.5 hover:shadow-lg ${
       isUrgent
-        ? 'border-red-500/40 hover:border-red-500/60 shadow-sm shadow-red-500/10'
+        ? 'border-red-500/40 hover:border-red-500/60 shadow-sm shadow-red-500/10 hover:shadow-red-500/20'
         : isMedium
         ? 'border-amber-500/25 hover:border-amber-500/40'
         : 'border-[--color-border] hover:border-violet-500/30'

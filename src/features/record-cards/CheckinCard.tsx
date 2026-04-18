@@ -10,7 +10,7 @@ interface CheckinCardProps {
 
 export function CheckinCard({ record, onPersonClick }: CheckinCardProps) {
   return (
-    <div className="group rounded-2xl border border-[--color-border] bg-[--color-surface] p-4 transition-all duration-150 hover:border-blue-500/30 hover:bg-[--color-surface-raised]">
+    <div className="group rounded-2xl border border-[--color-border] bg-[--color-surface] p-4 transition-all duration-150 hover:border-blue-500/30 hover:bg-[--color-surface-raised] hover:-translate-y-0.5 hover:shadow-lg hover:shadow-black/20">
       <div className="flex items-start justify-between gap-2 mb-3">
         <SourceBadge source="checkin" />
         <span className="font-mono text-[11px] text-[--color-text-dim]">

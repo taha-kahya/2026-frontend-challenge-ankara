@@ -11,7 +11,7 @@ export function SummaryStrip({ onPersonClick }: SummaryStripProps) {
     useSummaryInsights()
 
   return (
-    <div className="flex items-stretch gap-px border-b border-[--color-border] bg-[--color-border]">
+    <div className="fade-in-down flex items-stretch gap-px border-b border-[--color-border] bg-[--color-border]">
       {/* Last seen with */}
       <SummaryCard
         icon={<Eye className="h-3.5 w-3.5 text-amber-400" />}

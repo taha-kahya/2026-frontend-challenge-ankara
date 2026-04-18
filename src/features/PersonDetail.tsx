@@ -27,7 +27,7 @@ export function PersonDetail({ personName, onClose, onPersonClick }: PersonDetai
   ]
 
   return (
-    <aside className="flex flex-col h-full border-l border-[--color-border] bg-[--color-surface]">
+    <aside className="slide-in-right flex flex-col h-full border-l border-[--color-border] bg-[--color-surface]">
       {/* Header */}
       <div className="px-5 py-4 border-b border-[--color-border]">
         <div className="flex items-start justify-between gap-2">

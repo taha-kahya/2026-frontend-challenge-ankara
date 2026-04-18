@@ -14,12 +14,15 @@ export function SuspectList({ selectedPerson, onSelect }: SuspectListProps) {
   const { people, isLoading, isError } = usePeople()
 
   return (
-    <aside className="flex flex-col h-full border-r border-[--color-border]">
+    <aside className="flex flex-col h-full border-r border-[--color-border] relative">
       <div className="px-4 py-3 border-b border-[--color-border]">
         <p className="font-mono text-[10px] uppercase tracking-widest text-[--color-muted]">
           Suspects · {people.length}
         </p>
       </div>
+
+      {/* Fade-out at bottom */}
+      <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-10 bg-linear-to-t from-[--color-base] to-transparent z-10" />
 
       <div className="flex-1 overflow-y-auto p-3 space-y-2">
         {isLoading && (

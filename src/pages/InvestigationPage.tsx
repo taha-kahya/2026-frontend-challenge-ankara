@@ -146,10 +146,10 @@ function ViewToggle({ active, icon, label, onClick }: {
   return (
     <button
       onClick={onClick}
-      className={`cursor-pointer flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium transition-all duration-150 ${
+      className={`cursor-pointer flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-medium transition-all duration-150 ${
         active
-          ? 'bg-[--color-surface-raised] text-[--color-text] border border-white/12'
-          : 'text-[--color-text-dim] hover:text-[--color-text] hover:bg-white/5'
+          ? 'border-amber-500/30 bg-amber-500/10 text-amber-300'
+          : 'border-transparent text-[--color-text-dim] hover:text-[--color-text] hover:bg-white/5'
       }`}
     >
       {icon}{label}

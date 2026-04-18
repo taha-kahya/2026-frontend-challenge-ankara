@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { List, Map, Clock, Users, ChevronLeft } from 'lucide-react'
 import { CaseHeader } from '../features/CaseHeader'
 import { SuspectList } from '../features/SuspectList'
@@ -17,6 +17,17 @@ export function InvestigationPage() {
   const [centerView, setCenterView] = useState<CenterView>('feed')
   const [mobilePanel, setMobilePanel] = useState<MobilePanel>('main')
   const [alertsOnly, setAlertsOnly] = useState(false)
+  const [detailPerson, setDetailPerson] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (selectedPerson) {
+      setDetailPerson(selectedPerson)
+      return
+    }
+
+    const timeoutId = window.setTimeout(() => setDetailPerson(null), 220)
+    return () => window.clearTimeout(timeoutId)
+  }, [selectedPerson])
 
   function handlePersonClick(name: string) {
     if (!name) {
@@ -74,15 +85,25 @@ export function InvestigationPage() {
           </div>
         </div>
 
-        {selectedPerson && (
-          <div className="w-80 shrink-0 overflow-hidden">
-            <PersonDetail
-              personName={selectedPerson}
-              onClose={() => setSelectedPerson(null)}
-              onPersonClick={handlePersonClick}
-            />
-          </div>
-        )}
+        <div
+          className={`shrink-0 overflow-hidden transition-all duration-200 ease-out ${
+            selectedPerson ? 'w-80 opacity-100' : 'w-0 opacity-0'
+          }`}
+        >
+          {detailPerson && (
+            <div
+              className={`h-full transition-all duration-200 ${
+                selectedPerson ? 'translate-x-0 opacity-100' : 'translate-x-4 opacity-0'
+              }`}
+            >
+              <PersonDetail
+                personName={detailPerson}
+                onClose={() => setSelectedPerson(null)}
+                onPersonClick={handlePersonClick}
+              />
+            </div>
+          )}
+        </div>
       </div>
 
       {/* ── Mobile layout (<lg): single panel at a time ── */}

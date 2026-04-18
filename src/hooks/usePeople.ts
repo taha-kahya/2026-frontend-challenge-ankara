@@ -4,42 +4,15 @@ import { useMessages } from './useMessages'
 import { useSightings } from './useSightings'
 import { usePersonalNotes } from './usePersonalNotes'
 import { useAnonymousTips } from './useAnonymousTips'
+import { clusterNames, isFuzzyMatch } from '../utils/fuzzy'
 import type { PersonRecord } from '../types'
 
-const PODO = 'podo'
-
-function normalize(name: string): string {
-  return name.trim().toLowerCase()
+function isPodo(name: string): boolean {
+  return isFuzzyMatch(name, 'Podo')
 }
 
-function collectSuspects(
-  sightingNames: string[],    // seenWith values
-  messageNames: string[],     // senders + recipients
-  noteAuthors: string[],      // note authors
-  tipSuspects: string[],      // suspectName values
-  mentionedPeople: string[][], // mentionedPeople arrays from notes
-): Set<string> {
-  const allNames = [
-    ...sightingNames,
-    ...messageNames,
-    ...noteAuthors,
-    ...tipSuspects,
-    ...mentionedPeople.flat(),
-  ]
-
-  const seen = new Set<string>()
-  const result = new Set<string>()
-
-  for (const name of allNames) {
-    if (!name || normalize(name) === PODO) continue // exclude Podo from suspect list
-    const key = normalize(name)
-    if (!seen.has(key)) {
-      seen.add(key)
-      result.add(name.trim())
-    }
-  }
-
-  return result
+function matchesVariants(name: string, variants: string[]): boolean {
+  return variants.some(v => isFuzzyMatch(name, v))
 }
 
 function computeSuspicionScore(record: Omit<PersonRecord, 'suspicionScore'>): number {
@@ -69,29 +42,33 @@ export function usePeople() {
   const people = useMemo<PersonRecord[]>(() => {
     if (isLoading || isError) return []
 
-    const names = collectSuspects(
-      sightings.map(s => s.seenWith),
-      [...messages.map(m => m.senderName), ...messages.map(m => m.recipientName)],
-      notes.map(n => n.authorName),
-      tips.map(t => t.suspectName),
-      notes.map(n => n.mentionedPeople),
-    )
+    // Collect all candidate names, excluding Podo
+    const allNames = [
+      ...sightings.map(s => s.seenWith),
+      ...messages.map(m => m.senderName),
+      ...messages.map(m => m.recipientName),
+      ...notes.map(n => n.authorName),
+      ...tips.map(t => t.suspectName),
+      ...notes.flatMap(n => n.mentionedPeople),
+    ].filter(n => n && !isPodo(n))
 
-    return Array.from(names).map(name => {
-      const key = normalize(name)
+    // Cluster similar names — handles typos and Turkish diacritic variants
+    const clusters = clusterNames(allNames)
 
-      const personCheckins = checkins.filter(c => normalize(c.personName) === key)
-      const messagesSent = messages.filter(m => normalize(m.senderName) === key)
-      const messagesReceived = messages.filter(m => normalize(m.recipientName) === key)
-      const personSightings = sightings.filter(s => normalize(s.seenWith) === key)
+    return Array.from(clusters.entries()).map(([canonical, variants]) => {
+      const personCheckins = checkins.filter(c =>
+        !isPodo(c.personName) && matchesVariants(c.personName, variants),
+      )
+      const messagesSent = messages.filter(m => matchesVariants(m.senderName, variants))
+      const messagesReceived = messages.filter(m => matchesVariants(m.recipientName, variants))
+      const personSightings = sightings.filter(s => matchesVariants(s.seenWith, variants))
       const personNotes = notes.filter(
         n =>
-          normalize(n.authorName) === key ||
-          n.mentionedPeople.some(p => normalize(p) === key),
+          matchesVariants(n.authorName, variants) ||
+          n.mentionedPeople.some(p => matchesVariants(p, variants)),
       )
-      const personTips = tips.filter(t => normalize(t.suspectName) === key)
+      const personTips = tips.filter(t => matchesVariants(t.suspectName, variants))
 
-      // Latest timestamp across all records
       const timestamps = [
         ...personCheckins.map(c => c.timestamp),
         ...personSightings.map(s => s.timestamp),
@@ -99,11 +76,9 @@ export function usePeople() {
 
       const lastSighting = personSightings[0]
       const lastCheckin = personCheckins[0]
-      const lastLocation = lastSighting?.location ?? lastCheckin?.location
-      const lastCoordinates = lastSighting?.coordinates ?? lastCheckin?.coordinates
 
       const partial = {
-        name,
+        name: canonical,
         checkins: personCheckins,
         messagesSent,
         messagesReceived,
@@ -111,8 +86,8 @@ export function usePeople() {
         notes: personNotes,
         tips: personTips,
         lastSeen: timestamps[0],
-        lastLocation,
-        lastCoordinates,
+        lastLocation: lastSighting?.location ?? lastCheckin?.location,
+        lastCoordinates: lastSighting?.coordinates ?? lastCheckin?.coordinates,
       }
 
       return { ...partial, suspicionScore: computeSuspicionScore(partial) }

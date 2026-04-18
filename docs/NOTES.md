@@ -14,11 +14,17 @@ a real submission so transformers can be updated in minutes.
 Sightings (person was literally seen with Podo) weighted 3×, high-reliability tips
 4×. These weights are opinionated — plan to tune after seeing real data distribution.
 
-### Person matching is exact (normalized)
-Matching is `trim().toLowerCase()` equality, not fuzzy. JotForm free-text fields
-will have inconsistent casing and spacing. Fuzzy matching (Levenshtein / phonetic)
-is a bonus feature — flagged in CLAUDE.md but not implemented in the first pass.
-If names collide or split badly, this is the first thing to revisit.
+### Person matching uses Levenshtein fuzzy matching (updated)
+Initial pass used exact normalized equality. Updated to Levenshtein-based fuzzy
+matching in `src/utils/fuzzy.ts`. Threshold: `floor(len/4)`, max 2 edits.
+Turkish diacritics (ı ğ ü ş ö ç) are normalized before comparison.
+
+`clusterNames()` groups all person names from all 5 sources into canonical clusters
+before joining records. The first-seen spelling becomes the canonical name.
+Names ≤2 chars skip fuzzy (too many false positives).
+
+Trade-off: a threshold of 2 can merge different short names. Chosen over phonetic
+matching (Soundex/Metaphone) because Turkish names don't map well to English phonetics.
 
 ### API key stored in .env.local
 API key and form IDs are read via Vite's `import.meta.env` from `.env.local`.
@@ -30,8 +36,5 @@ hardcoded secrets.
 Chose not to mock data. The debug view + `debugAnswerKeys()` is the diagnostic path.
 Avoids the risk of building UI against mock shapes that don't match real API.
 
-## TODO (once form IDs + API key are available)
-- [ ] Open debug view, check field map output per source
-- [ ] Update field mappings in `src/data/transformers.ts`
-- [ ] Confirm `usePeople()` produces sensible person records
-- [ ] Start building UI
+## TODO
+- [ ] Final README polish before submission
